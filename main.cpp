@@ -17,17 +17,14 @@ void ShowTasks(AppState &editor_state) {
         return;
     }
 
-    int counter = 0;
+    int counter = 1;
     std::string current_task = "";
     do {
         myFile >> current_task;
-        std::cout <<std::setfill('.') << std::setw(25) << std::left << current_task;
+        std::cout << counter << ") "
+            << std::setw(25) << std::left << current_task 
+            << std::endl;     
         ++counter;        
-        // adds a newline to keep all tasks in view without scrolling right
-        if (counter > 2) {
-            std::cout << std::endl;
-            counter = 0;
-        }
     } while (!myFile.eof());
     std::cout << std::endl;
     myFile.close();
@@ -36,7 +33,29 @@ void ShowTasks(AppState &editor_state) {
 }
 
 //Todo - adds a task to Tasks.txt
+/* 
+ * If I open a tmp file to write into 
+ * while reading from Tasks.txt
+ * then I could write that file to Tasks.txt
+ * without deleting all the contents of Tasks.txt
+*/
 void AddTask(AppState &editor_state) {
+    std::ifstream MAIN_FILE;
+    std::ofstream TEMP_FILE;
+    TEMP_FILE.open("TMP.txt", std::_Ios_Openmode::_S_ate);
+    MAIN_FILE.open("Tasks.txt");
+
+    std::string contents = "";
+    MAIN_FILE >> contents;
+    std::cout << contents << std::endl;
+    while (!MAIN_FILE.fail()) {
+        MAIN_FILE >> contents;
+        std::cout << contents << std::endl;
+
+    }
+
+    MAIN_FILE.close();
+    TEMP_FILE.close();
     std::cout << "Added Task" << std::endl;
 }
 
@@ -74,6 +93,7 @@ void EndCheck(AppState &editor_state) {
         EndCheck(editor_state);
         break;
     }
+    std::cout << std::endl;
 }
 
 void Menu(AppState &editor_state) {
