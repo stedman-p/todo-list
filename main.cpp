@@ -5,7 +5,7 @@
 
 enum AppState {Running, Done, Error};
 
-//Todo - shows completed or current tasks to command line
+// shows completed or current tasks to command line
 void ShowTasks(AppState &editor_state) {
 
     std::ifstream myFile;
@@ -30,6 +30,7 @@ void ShowTasks(AppState &editor_state) {
         }
     } while (!myFile.eof());
     std::cout << std::endl;
+    myFile.close();
 
     std::cout << "Showed Tasks" << std::endl;
 }
