@@ -1,11 +1,36 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <string>
 
 enum AppState {Running, Done, Error};
 
 //Todo - shows completed or current tasks to command line
 void ShowTasks(AppState &editor_state) {
+
+    std::ifstream myFile;
+    myFile.open("Tasks.txt");
+
+    if (!myFile.is_open()) {
+        std::cout << "Could not open file Tasks.txt." << std::endl;
+        editor_state = Error;
+        return;
+    }
+
+    int counter = 0;
+    std::string current_task = "";
+    do {
+        myFile >> current_task;
+        std::cout <<std::setfill('.') << std::setw(25) << std::left << current_task;
+        ++counter;        
+        // adds a newline to keep all tasks in view without scrolling right
+        if (counter > 2) {
+            std::cout << std::endl;
+            counter = 0;
+        }
+    } while (!myFile.eof());
+    std::cout << std::endl;
+
     std::cout << "Showed Tasks" << std::endl;
 }
 
@@ -39,8 +64,10 @@ void EndCheck(AppState &editor_state) {
         editor_state = Done;
         break;
     /*
-     * I think this might cause memory problems if the user keeps entering the wrong
-     * value - maybe a do/while or while true loop might be better
+     * I think calling EndCheck() inside itself might cause memory problems 
+     * if the user keeps entering the wrong value
+     * maybe a do/while or while true loop might be better
+     * not sure right now, will ask someone
     */
     default:
         EndCheck(editor_state);
@@ -49,6 +76,7 @@ void EndCheck(AppState &editor_state) {
 }
 
 void Menu(AppState &editor_state) {
+    // Menu
     std::cout << "Options:" << std::endl;
     std::cout << std::setw(8) << "" << "1. Show Tasks" << std::endl;
     std::cout << std::setw(8) << "" << "2. Add Task" << std::endl;
@@ -56,10 +84,9 @@ void Menu(AppState &editor_state) {
     std::cout << std::setw(8) << "" << "4. Remove Task" << std::endl;
     std::cout << "Enter number of choice: ";
     
+    // calls selected function
     char menu_choice = '0';
-
     std::cin >> menu_choice;
-
     switch (menu_choice)
     {
     case '1':
@@ -75,7 +102,6 @@ void Menu(AppState &editor_state) {
     case '4':
         RemoveTask(editor_state);
         break;
-    
     default:
         editor_state = Error;
         break;
@@ -85,12 +111,12 @@ void Menu(AppState &editor_state) {
 int main() {
     AppState editor = Running;
     while (editor == Running) {
+        Menu(editor);
         // check for error before running
         if (editor == Error) {
             std::cout << "Error while running" << std::endl;
             return 1;
         }
-        Menu(editor);
         EndCheck(editor);
     }
     return 0;
