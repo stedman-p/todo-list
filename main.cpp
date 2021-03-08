@@ -5,18 +5,21 @@
 
 enum AppState {Running, Done, Error};
 
-// shows completed or current tasks to command line
+// Reads tasks from Tasks.txt
 void ShowTasks(AppState &editor_state) {
 
+    // 
     std::ifstream myFile;
     myFile.open("Tasks.txt");
 
+    // Check for opening errors
     if (!myFile.is_open()) {
         std::cout << "Could not open file Tasks.txt." << std::endl;
         editor_state = Error;
         return;
     }
 
+    // outputs tasks in order, numbered
     int counter = 1;
     std::string current_task = "";
     do {
@@ -25,25 +28,23 @@ void ShowTasks(AppState &editor_state) {
             << std::setw(25) << std::left << current_task 
             << std::endl;     
         ++counter;        
-    } while (!myFile.eof());
+    } while (!myFile.fail());
     std::cout << std::endl;
+
+
     myFile.close();
 
     std::cout << "Showed Tasks" << std::endl;
 }
 
-//Todo - adds a task to Tasks.txt
-/* 
- * If I open a tmp file to write into 
- * while reading from Tasks.txt
- * then I could write that file to Tasks.txt
- * without deleting all the contents of Tasks.txt
-*/
+//INCOMPLETE - adds a task to Tasks.txt
 void AddTask(AppState &editor_state) {
     std::ifstream MAIN_FILE;
     std::ofstream TEMP_FILE;
     TEMP_FILE.open("TMP.txt", std::_Ios_Openmode::_S_ate);
     MAIN_FILE.open("Tasks.txt");
+
+    std::cout << "Showing tasks:" << std::endl;
 
     std::string contents = "";
     MAIN_FILE >> contents;
@@ -51,8 +52,16 @@ void AddTask(AppState &editor_state) {
     while (!MAIN_FILE.fail()) {
         MAIN_FILE >> contents;
         std::cout << contents << std::endl;
-
     }
+    /*
+     * TODO: read MAIN_FILE into a vector in order to edit it
+     * write vector into TEMP File
+     * Write TEMP into MAIN File
+     * 
+     * this is probably unoptimized
+     * would be better not to write and read entire file every time
+     * but let's not feature creep here
+    */
 
     MAIN_FILE.close();
     TEMP_FILE.close();
@@ -108,12 +117,12 @@ void Menu(AppState &editor_state) {
     // calls selected function
     char menu_choice = '0';
     std::cin >> menu_choice;
+    std::cout << std::endl;
     switch (menu_choice)
     {
     case '1':
         ShowTasks(editor_state);
         break;
-
     case '2':
         AddTask(editor_state);
         break;
@@ -127,6 +136,7 @@ void Menu(AppState &editor_state) {
         editor_state = Error;
         break;
     }
+
 }
 
 int main() {
